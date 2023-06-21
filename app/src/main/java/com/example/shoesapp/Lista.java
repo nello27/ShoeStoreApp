@@ -1,29 +1,20 @@
 package com.example.shoesapp;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
-import java.util.Collections;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -33,21 +24,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+public class Lista extends AppCompatActivity {
 
-public class MainActivity extends AppCompatActivity {
-
-    private static final int PICK_IMAGE_REQUEST = 1;
     private static final int REQUEST_CODE_SELECT_IMAGE = 1;
     private static final int REQUEST_CODE_PERMISSIONS = 100;
     private static final String[] REQUIRED_PERMISSIONS = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
-    private List<String> dataList;
-    private List<ImageItem> imageList;
+    // Obtén una referencia al ListView
+    //ListView listView = findViewById(R.id.listView);
     private ImageAdapter adapter;
-
+    private List<MainActivity.ImageItem> imageList;
     private RecyclerView recyclerView; // Declarar recyclerView como una variable miembro
 
-    //obtener la lista de archivos de la carpeta "MisImagenes":
     private List<File> getFilesFromFolder(File folder) {
         List<File> fileList = new ArrayList<>();
 
@@ -65,42 +53,10 @@ public class MainActivity extends AppCompatActivity {
 
         return fileList;
     }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        // Definiendo una lista
-        dataList = new ArrayList<>();
-        dataList.add("Productos");
-        dataList.add("Servicios");
-        dataList.add("Sucursales");
-
-        // Obtén una referencia al ListView
-        ListView listView = findViewById(R.id.listView);
-
-        // Crea un ArrayAdapter para cargar los datos en el ListView
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, dataList);
-        // Asigna el adaptador al ListView
-        listView.setAdapter(arrayAdapter);
-        //Toast.makeText(MainActivity.this, "has pulsado"+dataList.get(position),Toast.LENGTH_SHORT);
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(MainActivity.this, "Has pulsado "+dataList.get(position),Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        /*Button button = findViewById(R.id.button);
-
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "Evento Proximamente disponible para reto2  ",Toast.LENGTH_SHORT).show();
-            }
-        });*/
+        setContentView(R.layout.activity_lista);
 
         //Agregar
 
@@ -110,22 +66,6 @@ public class MainActivity extends AppCompatActivity {
                 requestPermissions(REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS);
             }
         }
-
-        // Obtén una referencia al botón
-        Button btnSeleccionarImagen = findViewById(R.id.btnSeleccionarImagen);
-
-        // Configura el OnClickListener para el botón
-        btnSeleccionarImagen.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Crea un Intent para seleccionar imágenes
-                Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                intent.setType("image/*"); // Solo se muestran las imágenes
-
-                // Inicia el Intent para seleccionar imágenes
-                startActivityForResult(intent, REQUEST_CODE_SELECT_IMAGE);
-            }
-        });
 
         // Obtén una referencia al RecyclerView
         recyclerView = findViewById(R.id.recyclerView);
@@ -153,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Crea una lista de ImageItem a partir de los archivos
         for (File file : fileList) {
-            ImageItem imageItem = new ImageItem(file.getAbsolutePath());
+            MainActivity.ImageItem imageItem = new MainActivity.ImageItem(file.getAbsolutePath());
             imageList.add(imageItem);
         }
 
@@ -161,10 +101,10 @@ public class MainActivity extends AppCompatActivity {
         Context context = getApplicationContext();
 
         // Crear la lista de elementos
-        List<ListItem> items = new ArrayList<>();
-        items.add(new ListItem(1, context.getDrawable(R.drawable.image1), "Nombre 1"));
-        items.add(new ListItem(2, context.getDrawable(R.drawable.image2), "Nombre 2"));
-        items.add(new ListItem(3, context.getDrawable(R.drawable.image3), "Nombre 3"));
+        List<MainActivity.ListItem> items = new ArrayList<>();
+        items.add(new MainActivity.ListItem(1, context.getDrawable(R.drawable.image1), "Nombre 1"));
+        items.add(new MainActivity.ListItem(2, context.getDrawable(R.drawable.image2), "Nombre 2"));
+        items.add(new MainActivity.ListItem(3, context.getDrawable(R.drawable.image3), "Nombre 3"));
         // Agregar más elementos según sea necesario
 
         //items.add(new ListItem(2, "ruta_imagen_2"));
@@ -172,8 +112,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Crear y asignar el adaptador personalizado al ListView
         CustomAdapter adapter = new CustomAdapter(this, items);
-        listView.setAdapter(adapter);
-
+       //listView.setAdapter(adapter);
 
     }
 
@@ -226,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "Imagen guardada correctamente", Toast.LENGTH_SHORT).show();
 
                 // Agrega la imagen al imageList y notifica al adaptador del cambio
-                ImageItem imageItem = new ImageItem(file.getAbsolutePath());
+                MainActivity.ImageItem imageItem = new MainActivity.ImageItem(file.getAbsolutePath());
                 imageList.add(imageItem); // Agrega la nueva imagen a la lista existente
                 // Notifica al adaptador del cambio en la lista de imágenes
                 adapter.notifyDataSetChanged();
@@ -252,84 +191,5 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menur_m, menu);
-        return true;
-
-
-
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId(); //asigna la seleccion actual a una variable
-        if (id == R.id.productos) {
-            Toast.makeText(this, "Productos", Toast.LENGTH_SHORT).show();
-        }
-        if (id == R.id.servicios) {
-            Toast.makeText(this, "Servicios", Toast.LENGTH_SHORT).show();
-        }
-        if (id == R.id.sucursales) {
-            Toast.makeText(this, "Sucursales", Toast.LENGTH_SHORT).show();
-        }
-
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    // Ejemplo de clase de datos
-    public static class ListItem {
-        private int id;
-        private Drawable image;
-        private String name;
-
-        public ListItem(int id, Drawable image, String name) {
-            this.id = id;
-            this.image = image;
-            this.name = name;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        // ... otros getters y setters
-
-
-        public int getId() {
-            return id;
-        }
-
-        public void setId(int id) {
-            this.id = id;
-        }
-
-        public Drawable getImage() {
-            return image;
-        }
-
-        public void setImage(Drawable image) {
-            this.image = image;
-        }
-
-        @Override
-        public String toString() {
-            return name; // Cambiar esto si deseas mostrar más detalles en la representación del elemento
-        }
-    }
-
-    public void ListaCalzado(View view){
-        Intent intencion = new Intent(view.getContext(), Lista.class);
-        startActivity(intencion);
-    }
-
 
 }
-
-
